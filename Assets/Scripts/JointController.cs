@@ -48,25 +48,20 @@ public class JointController
 		var ax = jointInfo.mod.bone.ax;
 		int initDeg = jointInfo.mod.bone.initDeg;
 		var isR = jointInfo.reverse;
-		var euler = Vector3.zero;
 		var targetDeg = initDeg + degrees;
 		if (isR) { targetDeg = -targetDeg; }
 		switch (ax)
 		{
 			case Axis.X:
-				euler.x = targetDeg;
-				if (jointInfo.jointName.Equals("WaistYaw")) euler.y = 90;
-				tra.localEulerAngles = euler;
+				tra.localEulerAngles = new Vector3(targetDeg, tra.localEulerAngles.y, tra.localEulerAngles.z);
 				break;
 
 			case Axis.Y:
-				euler.y = targetDeg;
-				tra.localEulerAngles = euler;
+				tra.localEulerAngles = new Vector3(tra.localEulerAngles.x, targetDeg, tra.localEulerAngles.z);
 				break;
 
 			case Axis.Z:
-				euler.z = targetDeg;
-				tra.localEulerAngles = euler;
+				tra.localEulerAngles = new Vector3(tra.localEulerAngles.x, tra.localEulerAngles.y, targetDeg);
 				break;
 		}
 	}
