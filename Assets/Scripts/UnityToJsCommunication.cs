@@ -198,17 +198,17 @@ public class UnityToJsCommunication : MonoBehaviour
 
 	private void CreateWebSocket()
 	{
-		// ´´½¨ÊµÀıws://192.168.11.62:8080
-		string address = "ws://192.168.11.62:8088";
+		// åˆ›å»ºå®ä¾‹ws://192.168.11.62:8080
+		string address = "ws://192.168.11.146:8001/ws";
 		_socket = new WebSocket(address);
 
-		// ×¢²á»Øµ÷
+		// æ³¨å†Œå›è°ƒ
 		_socket.OnOpen += Socket_OnOpen;
 		_socket.OnClose += Socket_OnClose;
 		_socket.OnMessage += Socket_OnMessage;
 		_socket.OnError += Socket_OnError;
 
-		// Á¬½Ó
+		// è¿æ¥
 		_socket.ConnectAsync();
 	}
 
@@ -219,7 +219,7 @@ public class UnityToJsCommunication : MonoBehaviour
 
 	private void Socket_OnMessage(object sender, MessageEventArgs e)
 	{
-		Debug.Log(string.Format("Receive Bytes ({1}): {0}", e.Data, e.RawData.Length));
+		//Debug.Log(string.Format("Receive Bytes ({1}): {0}", e.Data, e.RawData.Length));
 		ReceiveMsg(e.Data);
 	}
 
@@ -234,14 +234,15 @@ public class UnityToJsCommunication : MonoBehaviour
 	}
 
 	/// <summary>
-	/// ½ÓÊÕÇ°¶Ë´«µİµÄ»úÆ÷ÈËÊµÊ±Êı¾İ
+	/// æ¥æ”¶å‰ç«¯ä¼ é€’çš„æœºå™¨äººå®æ—¶æ•°æ®
 	/// </summary>
 	/// <param name="msg"></param>
 	public void ReceiveMsg(string msg)
 	{
-		JointStatesInfo joitStates = JsonUtility.FromJson<JointStatesInfo>(msg);
-		if (joitStates == null) { return; }
-		foreach (JointStates stateItem in joitStates.jointStates)
+		Root robotStates = JsonUtility.FromJson<Root>(msg);
+        var jointState = robotStates.data.states.jointStates;
+		if (jointState == null) { return; }
+		foreach (JointStatesItem stateItem in jointState)
 		{
 			_jointController.RotateJoint(stateItem.name, stateItem.qa);
 		}
