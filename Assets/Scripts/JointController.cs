@@ -1,3 +1,4 @@
+using System.Reflection;
 using UnityEngine;
 public class JointController
 {
@@ -10,7 +11,7 @@ public class JointController
 	}
 
 	/// <summary>
-	/// ³õÊ¼»¯»úÆ÷ÈË¹Ø½ÚÎ»ÖÃ
+	/// åˆå§‹åŒ–å…³èŠ‚è§’åº¦
 	/// </summary>
 	public void InitJoints()
 	{
@@ -20,9 +21,9 @@ public class JointController
 			CommonRotate(joint);
 		}
 	}
-	#region »úÆ÷ÈË¹Ø½ÚĞı×ª
+	#region å…³èŠ‚æ—‹è½¬
 	/// <summary>
-	/// ¿ØÖÆ½ÚµãĞı×ª
+	/// æ—‹è½¬å…³èŠ‚
 	/// </summary>
 	/// <param name="jointName"></param>
 	/// <param name="radians"></param>
@@ -30,7 +31,7 @@ public class JointController
 	{
 		if (_robotData == null) return;
 		var modelName = JointNameMapping.Ins.GetLocalName(jointName);
-		var jointDegrees = RadiansToDegrees(radians);
+		var jointDegrees = (float)radians * Mathf.Rad2Deg;
 		if (_robotData.Joints.TryGetValue(modelName, out JointInfo jointInfo))
 		{
 			CommonRotate(jointInfo, jointDegrees);
@@ -38,36 +39,25 @@ public class JointController
 	}
 
 	/// <summary>
-	/// Ğı×ª½Úµã
+	/// é€šç”¨çš„å…³èŠ‚æ—‹è½¬
 	/// </summary>
 	/// <param name="jointInfo"></param>
 	/// <param name="degrees"></param>
 	private void CommonRotate(JointInfo jointInfo, float degrees = 0f)
 	{
 		var tra = jointInfo.mod.trans;
-		var ax = jointInfo.mod.bone.ax;
+		var ax = jointInfo.mod.bone.axIdx;
 		int initDeg = jointInfo.mod.bone.initDeg;
 		var isR = jointInfo.reverse;
 		var targetDeg = initDeg + degrees;
 		if (isR) { targetDeg = -targetDeg; }
-		switch (ax)
-		{
-			case Axis.X:
-				tra.localEulerAngles = new Vector3(targetDeg, tra.localEulerAngles.y, tra.localEulerAngles.z);
-				break;
-
-			case Axis.Y:
-				tra.localEulerAngles = new Vector3(tra.localEulerAngles.x, targetDeg, tra.localEulerAngles.z);
-				break;
-
-			case Axis.Z:
-				tra.localEulerAngles = new Vector3(tra.localEulerAngles.x, tra.localEulerAngles.y, targetDeg);
-				break;
-		}
+		var orignVec3 = GetRotationInspector(tra);
+		orignVec3[ax] = targetDeg;
+		SetRotationInspector(tra, orignVec3);
 	}
 	#endregion
 
-	#region »¬¶¯Ğı×ª»úÆ÷ÈË
+	#region å…³èŠ‚æ—‹è½¬
 	private bool _isRotating = false;
 	private Vector2 _lastTouchPosition;
 	private float _rotationSpeed = 0.5f;
@@ -92,15 +82,24 @@ public class JointController
 	}
 	#endregion
 
-	#region ¹¤¾ß
-	/// <summary>
-	/// »¡¶È×ª½Ç¶È
-	/// </summary>
-	/// <param name="radians"></param>
-	/// <returns></returns>
-	private float RadiansToDegrees(double radians)
+	#region è½¬æ¢å·¥å…·
+	public Vector3 GetRotationInspector(Transform t)
 	{
-		return (float)(radians * (180.0 / Mathf.PI));
+		var type = t.GetType();
+		var mi = type.GetMethod("GetLocalEulerAngles", BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance);
+		var rotationOrderPro = type.GetProperty("rotationOrder", BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance);
+		var rotationOrder = rotationOrderPro.GetValue(t, null);
+		var EulerAnglesInspector = mi.Invoke(t, new[] { rotationOrder });
+		return (Vector3)EulerAnglesInspector;
+	}
+
+	public void SetRotationInspector(Transform t, Vector3 v)
+	{
+		var type = t.GetType();
+		var mi = type.GetMethod("SetLocalEulerAngles", BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance);
+		var rotationOrderPro = type.GetProperty("rotationOrder", BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance);
+		var rotationOrder = rotationOrderPro.GetValue(t, null);
+		mi.Invoke(t, new[] { v, rotationOrder });
 	}
 	#endregion
 }
