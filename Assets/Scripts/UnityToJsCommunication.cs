@@ -9,7 +9,10 @@ public class UnityToJsCommunication : MonoBehaviour
 	private void Start()
 	{
 		_jointController = new JointController(RobotTra);
-		CreateWebSocket();
+		WebglConfigReader reader = new WebglConfigReader();
+		StartCoroutine(reader.ReadData((ipAddr) => {
+			CreateWebSocket(ipAddr);
+		}));
 	}
 
 	public void Update()
@@ -21,10 +24,10 @@ public class UnityToJsCommunication : MonoBehaviour
 
 	private IWebSocket _socket;
 
-	private void CreateWebSocket()
+	private void CreateWebSocket(string ip)
 	{
 		// 创建实例
-		string address = "ws://192.168.11.152:8001/ws";
+		string address = ip;
 		_socket = new WebSocket(address);
 
 		// 注册回调
