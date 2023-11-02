@@ -36,6 +36,24 @@ public class JointNameMapping
 		mapping["head_yaw"] = "NeckYaw";
 		mapping["head_pitch"] = "NeckPitch";
 		mapping["head_roll"] = "NeckRoll";
+
+		mapping["right_pitch_shoulder"] = "ShoulderPitchRight";
+		mapping["right_roll_shoulder"] = "ShoulderRollRight";
+		mapping["right_yaw_shoulder"] = "ShoulderYawRight";
+		mapping["right_elbow"] = "ElbowRight";
+
+		mapping["left_pitch_shoulder"] = "ShoulderPitchLeft";
+		mapping["left_roll_shoulder"] = "ShoulderRollLeft";
+		mapping["left_yaw_shoulder"] = "ShoulderYawLeft";
+		mapping["left_elbow"] = "ElbowLeft";
+
+		mapping["left_roll_wrist"] = "WristRollLeft";
+		mapping["left_pitch_wrist"] = "WristPitchLeft";
+		mapping["left_yaw_wrist"] = "WristYawLeft";
+
+		mapping["right_roll_wrist"] = "WristRollRight";
+		mapping["right_pitch_wrist"] = "WristPitchRight";
+		mapping["right_yaw_wrist"] = "WristYawRight";
 	}
 
 	public string GetLocalName(string jsonName)

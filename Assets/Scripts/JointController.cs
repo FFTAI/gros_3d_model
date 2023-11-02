@@ -49,9 +49,18 @@ public class JointController
 		var ax = jointInfo.mod.bone.axIdx;
 		int initDeg = jointInfo.mod.bone.initDeg;
 		var isR = jointInfo.reverse;
+		if (isR) { degrees = -degrees; }
 		var targetDeg = initDeg + degrees;
-		if (isR) { targetDeg = -targetDeg; }
-		var orignVec3 = GetRotationInspector(tra);
+		//if (isR) { targetDeg = -targetDeg; }
+		Vector3 orignVec3;
+		if (ax == 1)
+		{
+			orignVec3 = tra.localEulerAngles;
+		}
+		else 
+		{
+			orignVec3 = GetRotationInspector(tra);
+		}
 		orignVec3[ax] = targetDeg;
 		SetRotationInspector(tra, orignVec3);
 	}
