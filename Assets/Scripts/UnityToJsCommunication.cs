@@ -64,13 +64,17 @@ public class UnityToJsCommunication : MonoBehaviour
 			ResetTransformsRecursive(child, ref index);
 		}
 	}
-    #endregion
+	#endregion
+
+	string testData = "";
 	
 	private void Start()
 	{
 		_jointController = new JointController(RobotTra);
 		RecordTransforms(RobotTra);
-    }
+		
+
+	}
 
 	private void ReadConfig()
 	{
